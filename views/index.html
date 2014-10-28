@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html ng-app="ngStocks" ng-controller="AppCtrl">
+<head>
+	<title ng-bind="pageTitle"></title>
+	<meta charset="UTF-8">
+
+	<!-- font awesome from BootstrapCDN -->
+	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+	<!-- compiled CSS -->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/dist/css/bootstrap.css"/>
+
+	
+	<link rel="stylesheet" type="text/css" href="assets/ng-boilerplate-0.3.1.css"/>
+
+	
+	<link rel="stylesheet" type="text/css" href="assets/jquery-ui-1.10.4.custom.min.css"/>
+</head>
+<body>
+<div class="container">
+	<header>
+		<div class="row">
+			<div class="col-lg-5">
+				<h1>Team 14</h1>
+			</div>
+			<div class="col-lg-7">
+				<div class="dropdown pull-right">
+					<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						Notifications ({{notifications.get().length}}) <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" ng-if="notifications.get().length!==0">
+						<li ng-repeat="n in notifications.get()" style="width:300px">
+							<a ng-click="modals.information(n.query)">
+								<div class="row">
+									<div class="col-lg-10" style="overflow:hidden;text-overflow:ellipsis;">
+										<strong><small>{{n.query.query}}</small></strong>
+										<small ng-if="n.finished">Has finished</small>
+										<small ng-if="!n.finished">New data found</small>
+										<p><small>Total entries found: {{n.query.count}}</small></p>
+									</div>
+									<div class="col-lg-2">
+										<i class="fa fa-times pull-right" ng-click="notifications.deleteByIndex($index)" tooltip-placement="top" tooltip="{{actions.delete}}"></i>
+									</div>
+								</div>
+						
+							</a>
+							<hr style="margin:0px">
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="btn-group btn-group-justified">
+			<a class="btn btn-default" ng-click="addToString('con(  ) |')" role="button">Condition</a>
+			<a class="btn btn-default" ng-click="addToString('sort(  ) |')" role="button">Sort</a>
+			<a class="btn btn-default" ng-click="addToString('agg(  ) |')" role="button">Aggregate</a>
+			<a class="btn btn-default" ng-click="addToString('noti( ) |')" role="button">Notify</a>
+			<a class="btn btn-default" ng-click="addToString('ttl( ) |')" role="button">Running Time</a>
+
+		</div>
+	</header>
+
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="input-group">
+				<input type="text" class="form-control" id="tags" ng-model="searchQuery">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="postdata(searchQuery)">Go!</button>
+                  </span>
+			</div>
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-lg-6">
+			<p ng-if="result.query" class="text-success">Query has been submited</p>
+			<p ng-if="result.query==false" class="text-danger">Entered query is invalid</p>
+		</div>
+		<div class="col-lg-6">
+			<p class="pull-right">{{ time }}</p>
+		</div>
+	</div>
+	<div ng-show="selected">Selection from a modal: {{ selected }}</div>
+	<hr>
+
+
+	<div class="row">
+		<!-- Running queries -->
+		<div class="col-lg-4" ng-include="'queries/running/running.tpl.html'"></div>
+		<!-- Continuous queries -->
+		<div class="col-lg-4" ng-include="'queries/continuous/continuous.tpl.html'"></div>
+		<!-- Finished queries -->
+		<div class="col-lg-4" ng-include="'queries/finished/finished.tpl.html'"></div>
+	</div>
+</div>
+
+<footer class="footer">
+	<div class="container">
+		<hr>
+		<div class="row">
+			<div class="col-lg-6">
+				<p>&copy; Group 14</p>
+			</div>
+			<div class="col-lg-6">
+				<p class="pull-right text-success" ng-if="connection">Connected<p>
+				<p class="pull-right text-danger" ng-if="!connection">Disconnected<p>
+			</div>
+			
+		</div>
+	</div>
+</footer>
+
+<script src="/assets/jquery-1.11.0.min.js"></script>
+<script src="/assets/jquery-ui-1.10.4.custom.min.js"></script>
+<script src="/assets/highstock.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<!-- compiled JavaScript -->
+<script type="text/javascript" src="vendor/momentjs/moment.js"></script>
+
+<script type="text/javascript" src="vendor/angular/angular.js"></script>
+
+<script type="text/javascript" src="vendor/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+
+<script type="text/javascript" src="vendor/angular-route/angular-route.js"></script>
+
+<script type="text/javascript" src="vendor/angular-socket-io/socket.js"></script>
+
+<script type="text/javascript" src="vendor/angular-strap/dist/angular-strap.js"></script>
+
+<script type="text/javascript" src="vendor/angular-strap/dist/angular-strap.tpl.js"></script>
+
+<script type="text/javascript" src="src/app/app.js"></script>
+
+<script type="text/javascript" src="src/app/modals/information/information.js"></script>
+
+<script type="text/javascript" src="src/app/modals/subscription/subscription.js"></script>
+
+<script type="text/javascript" src="src/app/queries/continuous/continuous.js"></script>
+
+<script type="text/javascript" src="src/app/queries/finished/finished.js"></script>
+
+<script type="text/javascript" src="src/app/queries/queries.js"></script>
+
+<script type="text/javascript" src="src/app/queries/running/running.js"></script>
+
+<script type="text/javascript" src="src/common/factories/baseQueries.js"></script>
+
+<script type="text/javascript" src="src/common/factories/continuousQueries.js"></script>
+
+<script type="text/javascript" src="src/common/factories/finishedQueries.js"></script>
+
+<script type="text/javascript" src="src/common/factories/modals.js"></script>
+
+<script type="text/javascript" src="src/common/factories/notifications.js"></script>
+
+<script type="text/javascript" src="src/common/factories/runningQueries.js"></script>
+
+<script type="text/javascript" src="src/common/factories/socket.js"></script>
+
+<script type="text/javascript" src="templates-common.js"></script>
+
+<script type="text/javascript" src="templates-app.js"></script>
+
+</body>
+</html>
